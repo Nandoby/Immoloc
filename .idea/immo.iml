@@ -140,6 +140,10 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/flex" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/dependency-injection" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/cache-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container 2" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/event-dispatcher 2" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/cache 2" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/link 2" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
