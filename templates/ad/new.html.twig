@@ -2,6 +2,8 @@
 
 {% block title %}Création d'une annonce{% endblock %}
 
+{% form_theme form _self %}
+
 {% block body %}
     <div class="container">
         <h1>Création d'une nouvelle annonce</h1>
@@ -11,4 +13,21 @@
         <button type="submit" class="btn btn-primary mt-3">Création d'une annonce</button>
         {{ form_end(form) }}
     </div>
+{% endblock %}
+
+{% block form_row %}
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                {{ form_label(form) }}
+            </div>
+            <div class="col-6">
+                {{ form_widget(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block text_widget %}
+    <input type="text" name="{{ full_name }}" id="{{ id }}" class="form-control">
 {% endblock %}
