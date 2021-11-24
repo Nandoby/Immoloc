@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Ad;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -48,6 +49,11 @@ class AnnonceType extends AbstractType
             ->add('content', TextType::class, $this->getConfiguration("Description détaillée", "Donnez une description de votre bien"))
             ->add('rooms', IntegerType::class, $this->getConfiguration("Nombre de chambre", "Donnez le nombre de chambres disponsibles"))
             ->add('price', MoneyType::class, $this->getConfiguration("Prix par nuit", "Indiquer le prix que vous voulez pour une nuit"))
+            ->add('images', CollectionType::class, [
+                'entry_type' => ImageType::class,
+                'allow_add' => true, // permet d'ajouter des éléments et surtout avoir le data_prototype
+                'allow_delete' => true
+            ])
         ;
     }
 
