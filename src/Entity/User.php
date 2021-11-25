@@ -7,12 +7,18 @@ use Cocur\Slugify\Slugify;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\HasLifecycleCallbacks
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     message="Un autre utilisateur possède déjà cette e-mail, merci de la modifier"
+ * )
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -25,6 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Email(message="Veuillez renseigner un email valide")
      */
     private $email;
 
@@ -38,6 +45,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * Permet de confirmer le mot de passe avec les Assert
+     * @Assert\EqualTo(propertyPath="password", message="Vous n'avez pas correctement confirmé votre mot de passe")
+     */
+    public $passwordConfirm;
 
     /**
      * @ORM\Column(type="string", length=255)

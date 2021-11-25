@@ -144,6 +144,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/event-dispatcher 2" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/cache 2" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/link 2" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/lock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/rate-limiter" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

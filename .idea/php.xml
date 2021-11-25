@@ -141,6 +141,8 @@
       <path value="$PROJECT_DIR$/vendor/psr/event-dispatcher 2" />
       <path value="$PROJECT_DIR$/vendor/psr/cache 2" />
       <path value="$PROJECT_DIR$/vendor/psr/link 2" />
+      <path value="$PROJECT_DIR$/vendor/symfony/lock" />
+      <path value="$PROJECT_DIR$/vendor/symfony/rate-limiter" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
