@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class AccountController extends AbstractController
 {
@@ -46,13 +47,28 @@ class AccountController extends AbstractController
      * Permet d'afficher le formulaire d'inscription et d'inscrire un utilisateur dans le site
      * @Route("/register", name="account_register")
      */
-    public function register(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
+    public function register(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher)
     {
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $file = $form['picture']->getData();
+
+            if (!empty($file)) {
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename."-".uniqid().".".$file->guessExtension();
+                try {
+                    $file->move($this->getParameter('uploads_directory'), $newFilename);
+                } catch (FileException $exception) {
+                    return $exception->getMessage();
+                }
+                $user->setPicture($newFilename);
+            }
+
             $hash = $hasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hash);
 
@@ -92,8 +108,8 @@ class AccountController extends AbstractController
             );
         }
 
-        return $this->render("account/profile.html.twig",[
-           "form" => $form->createView()
+        return $this->render("account/profile.html.twig", [
+            "form" => $form->createView()
         ]);
     }
 
@@ -108,9 +124,11 @@ class AccountController extends AbstractController
         $form = $this->createForm(PasswordUpdateType::class, $passwordUpdate);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             // vérif que le mot de passe correspond à l'ancien
-            if (!password_verify($passwordUpdate->getOldPassword(),$user->getPassword())) {
+
+            if (!password_verify($passwordUpdate->getOldPassword(), $user->getPassword())) {
                 // gérer l'erreur
                 $form->get('oldPassword')->addError(new FormError("Le mot de passe que vous avez tapé n'est pas votre mot de passe actuel"));
             } else {
