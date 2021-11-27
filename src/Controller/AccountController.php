@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\PasswordUpdate;
 use App\Entity\User;
+use App\Entity\UserImgModify;
 use App\Form\AccountType;
+use App\Form\ImgModifyType;
 use App\Form\PasswordUpdateType;
 use App\Form\RegistrationType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -149,6 +151,22 @@ class AccountController extends AbstractController
         }
 
         return $this->render("account/password.html.twig", [
+            "form" => $form->createView()
+        ]);
+    }
+
+    /**
+     * Permet de modifier l'avatar de l'utilisateur
+     * @Route("/account/imgmodify", name="account_modifimg")
+     */
+    public function imgModify(): Response
+    {
+        $imgModify = new UserImgModify();
+        $user = $this->getUser();
+        $form = $this->createForm(ImgModifyType::class, $imgModify);
+
+
+        return $this->render("account/imgModify.html.twig", [
             "form" => $form->createView()
         ]);
     }
