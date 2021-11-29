@@ -66,9 +66,7 @@
                         <a href="{{ path('user_show', { 'slug': a.slug }) }}">
                             <h3>{{ a.fullName }}</h3>
                         </a>
-                        <button type="button" class="btn btn-primary">
-                            Annonce(s) <span class="badge badge-secondary">{{ a.ads | length }}</span>
-                        </button>
+                        <span class="badge bg-primary">Annonce(s) {{ a.ads | length }}</span>
                     </div>
                     {{ a.description | raw | nl2br }}
                 </div>

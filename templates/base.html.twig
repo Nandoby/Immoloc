@@ -31,8 +31,9 @@
         </div>
     {% endfor %}
 
-    {% block body %}{% endblock %}
-
+    <main>
+        {% block body %}{% endblock %}
+    </main>
     {% include "partials/footer.html.twig" %}
 
     {% block javascripts %}

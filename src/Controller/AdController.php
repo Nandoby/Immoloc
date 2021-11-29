@@ -7,6 +7,7 @@ use App\Entity\Image;
 use App\Form\AnnonceType;
 use App\Repository\AdRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,21 +31,11 @@ class AdController extends AbstractController
     /**
      * Permet de créer une annonce
      * @Route("/ads/new", name="ads_create")
+     * @IsGranted("ROLE_USER")
      */
     public function create(Request $request, EntityManagerInterface $manager): Response
     {
         $ad = new Ad();
-
-        $image1 = new Image();
-        $image1->setUrl("http://placehold.it/400x200")
-            ->setCaption("Titre 1");
-
-        $ad->addImage($image1);
-
-        $image2 = new Image();
-        $image2->setUrl("http://placehold.it/400x200")
-            ->setCaption("Titre 2");
-        $ad->addImage($image2);
 
         $form = $this->createForm(AnnonceType::class, $ad);
         $form->handleRequest($request);
