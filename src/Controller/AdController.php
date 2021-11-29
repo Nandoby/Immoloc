@@ -8,6 +8,7 @@ use App\Form\AnnonceType;
 use App\Repository\AdRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,6 @@ class AdController extends AbstractController
     /**
      * Permet de créer une annonce
      * @Route("/ads/new", name="ads_create")
-     * @IsGranted("ROLE_USER")
      */
     public function create(Request $request, EntityManagerInterface $manager): Response
     {
@@ -67,19 +67,9 @@ class AdController extends AbstractController
     }
 
     /**
-     * Permet d'afficher une seule annonce
-     * @Route("/ads/{slug}", name="ads_show")
-     */
-    public function show($slug, Ad $ad): Response
-    {
-        return $this->render('ad/show.html.twig', [
-            'ad' => $ad
-        ]);
-    }
-
-    /**
      * Permet de modifier une annonce
      * @Route("/ads/{slug}/edit", name="ads_edit")
+     * @Security("( is_granted('ROLE_USER') and user === ad.getAuthor() ) or is_granted('ROLE_ADMIN')", message="Cette annonce ne vous appartient pas, vous ne pouvez pas la modifier" )
      */
     public function edit(Request $request, EntityManagerInterface $manager, Ad $ad): Response
     {
@@ -103,6 +93,36 @@ class AdController extends AbstractController
 
         return $this->render("ad/edit.html.twig", [
             "form" => $form->createView(),
+            'ad' => $ad
+        ]);
+    }
+
+    /**
+     * Permet de supprimer une annonce
+     * @Route("/ads/{slug}/delete", name="ads_delete")
+     * @Security("( is_granted('ROLE_USER') and user === ad.getAuthor() ) or is_granted('ROLE_ADMIN')",
+     *      message="Cette annonce ne vous appartient pas, vous ne pouvez pas l'effacer")
+     */
+    public function delete(Ad $ad, EntityManagerInterface $manager)
+    {
+        $this->addFlash(
+            'success',
+            "L'annonce <strong>{$ad->getTitle()}</strong> a bien été supprimée"
+        );
+
+        $manager->remove($ad);
+        $manager->flush();
+
+        return $this->redirectToRoute('ads_index');
+    }
+
+    /**
+     * Permet d'afficher une seule annonce
+     * @Route("/ads/{slug}", name="ads_show")
+     */
+    public function show($slug, Ad $ad): Response
+    {
+        return $this->render('ad/show.html.twig', [
             'ad' => $ad
         ]);
     }

@@ -10,6 +10,7 @@ use App\Form\ImgModifyType;
 use App\Form\PasswordUpdateType;
 use App\Form\RegistrationType;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\FormError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
@@ -49,6 +50,7 @@ class AccountController extends AbstractController
     /**
      * Permet d'afficher le formulaire d'inscription et d'inscrire un utilisateur dans le site
      * @Route("/register", name="account_register")
+     * @IsGranted("ROLE_USER")
      */
     public function register(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher)
     {
@@ -94,6 +96,7 @@ class AccountController extends AbstractController
     /**
      * Permet de modifier son profil
      * @Route("/account/profile", name="account_profile")
+     * @IsGranted("ROLE_USER")
      */
     public function profile(Request $request, EntityManagerInterface $manager)
     {
@@ -133,6 +136,7 @@ class AccountController extends AbstractController
     /**
      * Permet de modifier le mot de passe
      * @Route("/account/password-update", name="account_password")
+     * @IsGranted("ROLE_USER")
      */
     public function updatePassword(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher)
     {
@@ -140,7 +144,6 @@ class AccountController extends AbstractController
         $user = $this->getUser();
         $form = $this->createForm(PasswordUpdateType::class, $passwordUpdate);
         $form->handleRequest($request);
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             // vérif que le mot de passe correspond à l'ancien
@@ -173,6 +176,7 @@ class AccountController extends AbstractController
     /**
      * Permet de modifier l'avatar de l'utilisateur
      * @Route("/account/imgmodify", name="account_modifimg")
+     * @IsGranted("ROLE_USER")
      */
     public function imgModify(Request $request, EntityManagerInterface $manager)
     {
@@ -218,7 +222,7 @@ class AccountController extends AbstractController
     /**
      * Permet de supprimer l'image de l'utilisateur
      * @Route("/account/delimg", name="account_delimg")
-     *
+     * @IsGranted("ROLE_USER")
      * @param EntityManagerInterface $manager
      * @return Response
      */
