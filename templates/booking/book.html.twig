@@ -3,9 +3,7 @@
 {% block title %}Réserver l'annonce : {{ ad.title }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
-          integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.1.4/dist/css/datepicker-bs4.min.css">
 {% endblock %}
 
 {% block body %}
@@ -34,36 +32,47 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
-            integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.1.4/dist/js/datepicker.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $("#booking_startDate, #booking_endDate").datepicker({
-                format: 'dd/mm/yyyy',
-                datesDisabled: [
-                    {% for day in ad.notAvailableDays %}
-                    "{{day.format('d/m/Y')}}",
-                    {% endfor %}
-                ] ,
-                startDate: new Date()
-            });
-            $("#booking_startDate, #booking_endDate").on('change', calculateAmount);
-        });
-        function calculateAmount(){
-            const endDate = new Date($('#booking_endDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
-            // 28/12/2019
-            // (\d+)\/(\d+)\/(\d{4})
-            // 2019-12-28
-            const startDate = new Date($('#booking_startDate').val().replace(/(\d+)\/(\d+)\/(\d{4})/,'$3-$2-$1'));
-            if(startDate && endDate && startDate < endDate){
-                const interval = endDate.getTime() - startDate.getTime();
-                const days = interval / (24 * 60 * 60 * 1000);
-                const amount = days * {{ ad.price }};
-                $('#days').text(days);
-                $('#amount').text(amount.toLocaleString('fr-FR'));
+        const bookingStartDate = document.querySelector('#booking_startDate')
+        const bookingEndDate = document.querySelector('#booking_endDate')
+        const datePickerStart = new Datepicker(bookingStartDate,{
+            format: 'dd/mm/yyyy',
+            datesDisabled: [
+                {% for day in ad.notAvailableDays %}
+                "{{day.format('d/m/Y')}}",
+                {% endfor %}
+            ],
+            minDate: new Date()
+        })
+        const datePickerEnd = new Datepicker(bookingEndDate,{
+            format: 'dd/mm/yyyy',
+            datesDisabled: [
+                {% for day in ad.notAvailableDays %}
+                "{{day.format('d/m/Y')}}",
+                {% endfor %}
+            ],
+            minDate: new Date()
+        })
+        bookingStartDate.addEventListener('changeDate', ()=>{
+            calculateAmount()
+        })
+        bookingEndDate.addEventListener('changeDate', ()=>{
+            calculateAmount()
+        })
+        const calculateAmount = () => {
+            let bookingStartDate = document.querySelector('#booking_startDate')
+            let bookingEndDate = document.querySelector('#booking_endDate')
+            const endDate = new Date(bookingEndDate.value.replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1'))
+            const startDate = new Date(bookingStartDate.value.replace(/(\d+)\/(\d+)\/(\d{4})/, '$3-$2-$1'))
+            if (startDate && endDate && startDate < endDate) {
+                const interval = endDate.getTime() - startDate.getTime()
+                const days = interval / (24 * 60 * 60 * 1000)
+                const amount = days * {{ ad.price }}
+                const myDays = document.querySelector('#days')
+                const myAmount = document.querySelector('#amount')
+                myDays.innerHTML = days
+                myAmount.innerHTML = amount.toLocaleString('fr-FR')
             }
         }
     </script>

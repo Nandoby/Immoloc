@@ -37,19 +37,25 @@
                     <div class="row mb-3">
                         <div class="col-3">
                             {% if booking.ad.author.picture %}
-                                <img src="/uploads/{{ booking.ad.author.picture }}" alt="avatar de {{ booking.ad.author.fullName }}" class="avatar avatar-medium">
+                                <img src="/uploads/{{ booking.ad.author.picture }}"
+                                     alt="avatar de {{ booking.ad.author.fullName }}" class="avatar avatar-medium">
                             {% else %}
-                                <img src="http://placehold.it/300x300" alt="avatar de {{booking.ad.author.fullName}}" class="avatar avatar-medium">
+                                <img src="http://placehold.it/300x300"
+                                     alt="avatar de {{booking.ad.author.fullName}}" class="avatar avatar-medium">
                             {% endif %}
                         </div>
                         <div class="col-9 mb-3">
                             <h4>
-                                <a href="{{ path('user_show', {'slug': booking.ad.author.slug}) }}">{{ booking.ad.author.fullName }}</a>
+                                <a href="{{ path('user_show', {'slug': booking.ad.author.slug}) }}">
+                                    {{ booking.ad.author.fullName }}
+                                </a>
                             </h4>
                             <span class="badge bg-primary">{{ booking.ad.author.ads | length}} annonce(s)</span>
                         </div>
                         {{ booking.ad.author.description | raw | nl2br }}
-                        <a href="{{ path('user_show', { 'slug' : booking.ad.author.slug }) }}" class="btn btn-primary">Plus d'info sur {{ booking.ad.author.firstName }}</a>
+                        <a href="{{ path('user_show', { 'slug' : booking.ad.author.slug }) }}" class="btn btn-primary">
+                            Plus d'info sur {{ booking.ad.author.firstName }}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -61,7 +67,9 @@
                     </h4>
                     <img src="{{ booking.ad.coverImage }}" alt="Image de {{ booking.ad.title }}" class="img-fluid">
                     {{ booking.ad.content | raw | nl2br }}
-                    <a href="{{ path('ads_show', { 'slug' : booking.ad.slug }) }}" class="btn btn-primary">Plus d'informations</a>
+                    <a href="{{ path('ads_show', { 'slug' : booking.ad.slug }) }}" class="btn btn-primary">
+                        Plus d'informations
+                    </a>
                 </div>
             </div>
         </div>
