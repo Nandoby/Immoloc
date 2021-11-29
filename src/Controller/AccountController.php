@@ -63,7 +63,7 @@ class AccountController extends AbstractController
             if (!empty($file)) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                $newFilename = $safeFilename."-".uniqid().".".$file->guessExtension();
+                $newFilename = $safeFilename . "-" . uniqid() . "." . $file->guessExtension();
                 try {
                     $file->move($this->getParameter('uploads_directory'), $newFilename);
                 } catch (FileException $exception) {
@@ -103,7 +103,7 @@ class AccountController extends AbstractController
         $filename = $user->getPicture();
 
         if (!empty($filename)) {
-            $user->setPicture(new File($this->getParameter('uploads_directory').'/'.$user->getPicture()));
+            $user->setPicture(new File($this->getParameter('uploads_directory') . '/' . $user->getPicture()));
         }
 
         $form = $this->createForm(AccountType::class, $user);
@@ -113,8 +113,7 @@ class AccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // gestion image
             $user->setSlug('')
-                ->setPicture($filename)
-            ;
+                ->setPicture($filename);
             $manager->persist($user);
             $manager->flush();
 
@@ -122,6 +121,8 @@ class AccountController extends AbstractController
                 "success",
                 "Les données ont été enregistrées avec succès"
             );
+
+            return $this->redirectToRoute('account_index');
         }
 
         return $this->render("account/profile.html.twig", [
@@ -160,7 +161,7 @@ class AccountController extends AbstractController
                     "Votre mot de passe a bien été modifié"
                 );
 
-                return $this->redirectToRoute('homepage');
+                return $this->redirectToRoute('account_index');
             }
         }
 
@@ -184,17 +185,17 @@ class AccountController extends AbstractController
             // Permet de supprimer l'image dans le dossier
             // gestion de la non obligation de l'image
             if (!empty($user->getPicture())) {
-                unlink($this->getParameter("uploads_directory".'/'.$user->getPicture));
+                unlink($this->getParameter("uploads_directory" . '/' . $user->getPicture));
             }
 
             $file = $form['newPicture']->getData();
             if (!empty($file)) {
-                $originalFilename = pathinfo($file-getClientOriginalName(), PATHINFO_FILENAME);
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                $newFilename = $safeFilename."-".uniqid().".".$file->guessExtension();
+                $newFilename = $safeFilename . "-" . uniqid() . "." . $file->guessExtension();
                 try {
                     $file->move($this->getParameter('uploads_directory'), $newFilename);
-                } catch(FileException $exception) {
+                } catch (FileException $exception) {
                     return $exception->getMessage();
                 }
                 $user->setPicture($newFilename);
@@ -205,13 +206,37 @@ class AccountController extends AbstractController
 
             $this->addFlash('success', 'Votre avatar a bien été modifié');
 
-            return $this->redirectToRoute("homepage");
+            return $this->redirectToRoute("account_index");
         }
 
         return $this->render("account/imgModify.html.twig", [
             "form" => $form->createView()
         ]);
 
+    }
+
+    /**
+     * Permet de supprimer l'image de l'utilisateur
+     * @Route("/account/delimg", name="account_delimg")
+     *
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
+    public function removeImg(EntityManagerInterface $manager)
+    {
+        $user = $this->getUser();
+        if (!empty($user->getPicture())) {
+            unlink($this->getParameter('uploads_directory').'/'.$user->getPicture());
+            $user->setPicture('');
+            $manager->persist($user);
+            $manager->flush();
+            $this->addFlash(
+                'success',
+                'Votre avatar a bien été supprimé'
+            );
+        }
+
+        return $this->redirectToRoute('account_index');
     }
 }
 
