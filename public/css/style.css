@@ -46,3 +46,7 @@ main {
 .datepicker-cell.disabled {
     color: firebrick !important;
 }
+
+.rating {
+    color: goldenrod;
+}
