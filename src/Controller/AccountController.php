@@ -50,7 +50,6 @@ class AccountController extends AbstractController
     /**
      * Permet d'afficher le formulaire d'inscription et d'inscrire un utilisateur dans le site
      * @Route("/register", name="account_register")
-     * @IsGranted("ROLE_USER")
      */
     public function register(Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher)
     {
