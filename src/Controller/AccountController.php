@@ -12,6 +12,7 @@ use App\Form\RegistrationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -97,10 +98,23 @@ class AccountController extends AbstractController
     public function profile(Request $request, EntityManagerInterface $manager)
     {
         $user = $this->getUser(); // récup l'utilisateur connecté
+
+        // pour la validation des images ou utilisateur une validation Groups
+        $filename = $user->getPicture();
+
+        if (!empty($filename)) {
+            $user->setPicture(new File($this->getParameter('uploads_directory').'/'.$user->getPicture()));
+        }
+
         $form = $this->createForm(AccountType::class, $user);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
+            // gestion image
+            $user->setSlug('')
+                ->setPicture($filename)
+            ;
             $manager->persist($user);
             $manager->flush();
 
@@ -159,16 +173,45 @@ class AccountController extends AbstractController
      * Permet de modifier l'avatar de l'utilisateur
      * @Route("/account/imgmodify", name="account_modifimg")
      */
-    public function imgModify(): Response
+    public function imgModify(Request $request, EntityManagerInterface $manager)
     {
         $imgModify = new UserImgModify();
         $user = $this->getUser();
         $form = $this->createForm(ImgModifyType::class, $imgModify);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Permet de supprimer l'image dans le dossier
+            // gestion de la non obligation de l'image
+            if (!empty($user->getPicture())) {
+                unlink($this->getParameter("uploads_directory".'/'.$user->getPicture));
+            }
+
+            $file = $form['newPicture']->getData();
+            if (!empty($file)) {
+                $originalFilename = pathinfo($file-getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename."-".uniqid().".".$file->guessExtension();
+                try {
+                    $file->move($this->getParameter('uploads_directory'), $newFilename);
+                } catch(FileException $exception) {
+                    return $exception->getMessage();
+                }
+                $user->setPicture($newFilename);
+            }
+
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash('success', 'Votre avatar a bien été modifié');
+
+            return $this->redirectToRoute("homepage");
+        }
 
         return $this->render("account/imgModify.html.twig", [
             "form" => $form->createView()
         ]);
+
     }
 }
 

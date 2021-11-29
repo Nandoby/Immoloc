@@ -50,23 +50,27 @@
                 </div>
             </div>
             <div class="col">
+                {% set a = ad.author %}
                 <div class="row">
-                    <div class="col-4">
-                        <img src="http://placehold.it/64x64" alt="Avatar de Bruce">
+                    <div class="col-3">
+                        <a href="#">
+                            {% if a.picture %}
+                                <img src="/uploads/{{ a.picture }}" alt="Avatar de {{ a.fullName }}" class="avatar avatar-medium">
+                            {% else %}
+                                <img src="http://placehold.it/300x300" alt="Avatar de {{ a.fullName }}" class="avatar avatar-medium">
+                            {% endif %}
+                        </a>
+                    </div>
                     </div>
                     <div class="col">
-                        <h3>Bruce Wayne</h3>
-                        <span class="badge bg-primary">3 annonces</span>
+                        <a href="#">
+                            <h3>{{ a.fullName }}</h3>
+                        </a>
+                        <button type="button" class="btn btn-primary">
+                            Annonce(s) <span class="badge badge-secondary">{{ a.ads | length }}</span>
+                        </button>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto culpa dolore explicabo
-                        odio quos ratione sunt vitae. Autem cumque ducimus eaque, fuga illum laboriosam quaerat
-                        quibusdam sapiente soluta tempore?</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto culpa dolore explicabo
-                        odio quos ratione sunt vitae. Autem cumque ducimus eaque, fuga illum laboriosam quaerat
-                        quibusdam sapiente soluta tempore?</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto culpa dolore explicabo
-                        odio quos ratione sunt vitae. Autem cumque ducimus eaque, fuga illum laboriosam quaerat
-                        quibusdam sapiente soluta tempore?</p>
+                    {{ a.description | raw | nl2br }}
                 </div>
             </div>
         </div>
