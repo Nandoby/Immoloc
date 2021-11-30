@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -25,11 +26,13 @@ class Comment
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(min=1, max=5, notInRangeMessage="Vous devez choisir un chiffre entre 1 et 5")
      */
     private $rating;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Length(min=10, minMessage="Votre commentaire doit faire au moins 10 caractères")
      */
     private $content;
 
