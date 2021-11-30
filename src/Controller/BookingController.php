@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Ad;
 use App\Entity\Booking;
+use App\Entity\Comment;
 use App\Form\BookingType;
+use App\Form\CommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,8 +30,7 @@ class BookingController extends AbstractController
             // traitement
             $user = $this->getUser();
             $booking->setBooker($user)
-                ->setAd($ad)
-            ;
+                ->setAd($ad);
 
             // si les dates ne sont pas disponible, message d'erreur
             if (!$booking->isBookableDates()) {
@@ -43,7 +44,6 @@ class BookingController extends AbstractController
 
                 return $this->redirectToRoute('booking_show', ['id' => $booking->getId(), 'withAlert' => true]);
             }
-
         }
 
         return $this->render('booking/book.html.twig', [
@@ -55,11 +55,29 @@ class BookingController extends AbstractController
     /**
      * Permet d'afficher la page d'une reservation
      * @Route("/booking/{id}", name="booking_show")
+     * @IsGranted("ROLE_USER")
      */
-    public function show(Booking $booking)
+    public function show(Booking $booking, Request $request, EntityManagerInterface $manager)
     {
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setAd($booking->getAd())
+                ->setAuthor($this->getUser());
+            $manager->persist($comment);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre commentaire a bien été pris en compte'
+            );
+        }
+
         return $this->render("booking/show.html.twig", [
-            "booking" => $booking
+            "booking" => $booking,
+            'form' => $form->createView()
         ]);
     }
 }
